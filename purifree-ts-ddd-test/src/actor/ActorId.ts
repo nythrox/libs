@@ -25,6 +25,12 @@ type ExcludeMethods<T> = Omit<T, JustMethodKeys<T>>;
 type PublicInterface<T> = ExcludeMethods<T>;
 
 const _isValueObject = Symbol("isValueObject");
+type ValueObjectI<T extends object, I = PublicInterface<T>> = {
+  readonly [P in keyof I]: I[P];
+} & {
+  equals(other: T): boolean;
+  create(value: I): T;
+};
 abstract class ValueObject<T extends Record<string, any>> {
   private [_isValueObject] = true;
   protected constructor(value: PublicInterface<T>) {}
@@ -116,12 +122,10 @@ class Email extends ValueObject<Email> {
     }
     return Right(new Email({ value: email }));
   }
-
 }
 
 class User {
-  email: Email
+  email: Email;
 }
 
-const email = Email.create("jason")
-
+const email = Email.create("jason");
